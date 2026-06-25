@@ -1,10 +1,10 @@
 const BRAND_CONTEXT = {
-  "Epic Deals": "Certified Pre-Loved tech. Tested. Graded. Warrantied. Trusted by 40,000+ South Africans. 4.9 stars. Voice: smart, confident, relatable SA brand.",
-  "Orange Advertising": "Marketing and advertising agency. Professional, creative, results-driven. Voice: strategic, bold, modern.",
-  "GS Gear": "Tech accessories and gear. Value for money. Voice: practical, direct, energetic.",
-  "Epic Rentals": "Rental solutions. Flexible, affordable. Voice: friendly, practical, trustworthy.",
-  "Kirks Plumbing": "Plumbing services. Reliable, professional, fast. Voice: trustworthy, no-nonsense, local.",
-  "Epic Marketing": "Full-service marketing. Creative campaigns. Voice: creative, professional, results-focused."
+  "Epic Deals": `Pre-loved and brand new tech retailer. Products: smartphones, laptops, gaming laptops, gaming consoles, smart home devices, small tech, home appliances. Certified Pre-Loved = Tested, Graded, Warrantied. 40,000+ SA customers, 4.9 stars. Audience: aspirational SA buyers 18-45 who want quality without full retail price. Voice: confident, smart, relatable, value-driven. Key message: same quality, smarter price.`,
+  "Orange Advertising": `KTM adventure bike aftermarket upgrade specialist. NOT mechanical or engine parts — aftermarket accessories, protection gear, luggage systems, comfort upgrades, aesthetic enhancements for adventure KTM bikes only. Audience: passionate KTM adventure riders who invest seriously in their bikes. Voice: adventurous, technical, passionate, community-driven.`,
+  "GS Gear": `BMW GS adventure bike aftermarket upgrade specialist. Full GS range: GS 900, GS 1200, GS 1250, GS 1300 and all GS variants. Accessories, protection, luggage, comfort and aesthetic upgrades — not mechanical parts. Audience: BMW GS owners passionate about adventure riding. Voice: premium, technical, adventurous, brand-loyal.`,
+  "Epic Rentals": `Rental solutions for individuals and families. Rental periods: 12, 24, 36, 48 months. Products: laptops, phones, fridges, air conditioners, furniture, baby gear, appliances — virtually anything household or lifestyle. For people who want quality now without the large upfront cost. Audience: young families, professionals, people in a pinch who want quality without the big premium. Voice: empathetic, practical, empowering, no-judgment.`,
+  "Kirks Plumbing": `Full-service residential and commercial construction contractor. Services: plumbing, roof repairs, wall repairs, all construction work. A one-stop contractor — not just plumbing. Audience: homeowners, landlords, property managers, businesses. Voice: trustworthy, professional, no-nonsense, reliable.`,
+  "Epic Marketing": `Full-service marketing agency. Handles social media, content creation, campaigns, creative strategy and execution for the Epic Venture group and external clients. Makes brands epic. Audience: businesses needing serious marketing. Voice: creative, bold, results-focused, energetic.`
 };
 
 const PLATFORM_RULES = {
@@ -39,18 +39,21 @@ export default async function handler(req, res) {
   const isAfrikaans = language === "afrikaans";
   const platformContext = PLATFORM_RULES[platform] || PLATFORM_RULES["Instagram"];
 
-  const sys = `You are a senior creative director for ${brand}, a South African brand. Generate sharp, practical creative briefs for social media posts.
+  const brandContext = BRAND_CONTEXT[brand] || `${brand} is a South African brand.`;
 
-Brand context: ${BRAND_CONTEXT[brand] || brand}
+  const sys = `You are a senior creative director generating social media briefs for ${brand}, part of the Epic Venture group in South Africa.
+
+Brand context: ${brandContext}
 Platform: ${platform || "Instagram"}
 Platform requirements: ${platformContext}
 
 SA market knowledge:
 - Price-sensitive, aspirational buyer
-- Value anchoring (retail vs deal price) stops the scroll
+- Value anchoring stops the scroll
 - Payday cycles matter (25th-1st = peak)
 - Trust signals matter — reviews, warranties, condition grades
 - Bold visuals + short punchy copy wins
+- Speak to the brand's specific audience — not a generic SA buyer
 
 ${saFlavour ? SA_HUMOUR_GUIDE : "Keep tone professional, warm, and relatable. No humour required."}
 ${isAfrikaans ? "IMPORTANT: Write the entire brief in natural, colloquial Afrikaans — not stiff or translated-sounding." : "Write in English."}

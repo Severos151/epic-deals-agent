@@ -21,13 +21,23 @@ export default async function handler(req, res) {
   const { brand, type, caption, fixes, suggestion, saFlavour, language } = req.body;
   const isAfrikaans = language === "afrikaans";
 
-  const sys = `You are a senior copywriter for ${brand}, a South African brand. Rewrite social media captions to be sharper, more scroll-stopping, and on-brand.
+  const BRAND_VOICE = {
+    "Epic Deals": "Smart, confident, value-driven. SA tone. Pre-loved tech — quality at a smarter price.",
+    "Orange Advertising": "Adventurous, technical, passionate. KTM adventure bike community.",
+    "GS Gear": "Premium, technical, adventurous. BMW GS adventure bike community.",
+    "Epic Rentals": "Empathetic, practical, empowering. Quality products, no big upfront cost.",
+    "Kirks Plumbing": "Trustworthy, professional, no-nonsense. Residential and commercial construction.",
+    "Epic Marketing": "Creative, bold, results-focused. Makes brands epic."
+  };
 
-SA market rules:
+  const sys = `You are a senior copywriter rewriting a social media caption for ${brand}, a South African brand.
+
+Brand voice: ${BRAND_VOICE[brand] || brand}
+
+Rules:
 - Hook in the first line — no warm-up
 - Short sentences hit harder
-- Price and value must be clear for sale posts
-- Real, relatable SA tone — not corporate
+- Match the brand's specific voice and audience above
 - Strong CTA at the end
 - Relevant hashtags
 
