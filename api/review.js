@@ -3,7 +3,7 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: "Method not allowed" });
   }
 
-  const { brand, type, input, caption, imageBase64, imageType } = req.body;
+  const { brand, type, input, imageBase64, imageType } = req.body;
 
   const sys = `You are the marketing approval agent for ${brand}, a South African recommerce/tech brand. You review social media posts on behalf of Wes, the Group CEO. Be direct, sharp, no fluff — like a CEO reviewer not a consultant.
 
@@ -11,7 +11,7 @@ Wes's 4 approval filters:
 1. QUALITY + RELATABILITY: Premium look, relevant to SA buyer
 2. CLIENT TRUST: Would a skeptical buyer trust this? Does it answer "why care?"
 3. SCROLL-STOPPER: Not generic, not Temu-style, not templated
-4. BRAND/SELL BALANCE: Brand posts need vibe + substance. Sale posts need price/product/value.
+4. BRAND/SELL BALANCE: Brand posts need vibe + substance not just slogans. Sale posts need price/product/value.
 
 Post type: ${type}
 
@@ -25,12 +25,12 @@ Epic Deals brand pillars:
 - Generic motivational copy with no product/price = reject
 - Cluttered layouts, random decorative elements = negative
 
-If a caption is provided, review it separately for: hook strength, clarity, tone match, CTA effectiveness, hashtag relevance, and whether it would stop someone mid-scroll.
+If an image is provided, analyse the actual visual — layout, typography, product presentation, copy, colours, and whether it stops the scroll.
 
-Score each out of 10. APPROVED = avg 8+. REVISE = avg 6-7. REJECTED = below 6 or critical error.
+Score each out of 10. APPROVED = avg 8+. REVISE = avg 6-7. REJECTED = below 6 or any critical error.
 
 Respond ONLY in this JSON, nothing else:
-{"scores":{"quality":0,"trust":0,"scroll":0,"balance":0},"verdict":"REVISE","what_works":["point"],"what_fails":["point"],"fixes":["fix"],"caption_feedback":["caption point — only include if caption was provided"],"copy_suggestion":"direction"}`;
+{"scores":{"quality":0,"trust":0,"scroll":0,"balance":0},"verdict":"REVISE","what_works":["point"],"what_fails":["point"],"fixes":["fix"],"copy_suggestion":"direction"}`;
 
   const userContent = [];
 
@@ -41,12 +41,12 @@ Respond ONLY in this JSON, nothing else:
     });
   }
 
-  let textContent = `Review this ${type} post for ${brand}.`;
-  if (input) textContent += ` Context: ${input}`;
-  if (caption) textContent += ` Caption to review: "${caption}"`;
-  if (!imageBase64 && !input && !caption) textContent = `Review this ${type} post for ${brand}: ${input}`;
-
-  userContent.push({ type: "text", text: textContent });
+  userContent.push({
+    type: "text",
+    text: imageBase64
+      ? `Review this ${type} post for ${brand}.${input ? " Additional context: " + input : " Analyse the image fully."}`
+      : `Review this ${type} post for ${brand}: ${input}`
+  });
 
   try {
     const response = await fetch("https://api.anthropic.com/v1/messages", {
@@ -58,7 +58,7 @@ Respond ONLY in this JSON, nothing else:
       },
       body: JSON.stringify({
         model: "claude-sonnet-4-6",
-        max_tokens: 1200,
+        max_tokens: 1000,
         system: sys,
         messages: [{ role: "user", content: userContent }]
       })

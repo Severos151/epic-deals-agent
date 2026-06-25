@@ -31,7 +31,6 @@ export default function App() {
   const [brand, setBrand] = useState("Epic Deals");
   const [type, setType] = useState("Product Sale");
   const [input, setInput] = useState("");
-  const [caption, setCaption] = useState("");
   const [image, setImage] = useState(null);
   const [imageBase64, setImageBase64] = useState(null);
   const [imageType, setImageType] = useState(null);
@@ -59,17 +58,14 @@ export default function App() {
   }
 
   async function reviewPost() {
-    if (!input.trim() && !imageBase64 && !caption.trim()) {
-      alert("Add a description, upload an image, or paste a caption first.");
-      return;
-    }
+    if (!input.trim() && !imageBase64) { alert("Add a description or upload an image first."); return; }
     setLoading(true); setResult(null); setError("");
 
     try {
       const res = await fetch("/api/review", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ brand, type, input, caption, imageBase64, imageType })
+        body: JSON.stringify({ brand, type, input, imageBase64, imageType })
       });
       const data = await res.json();
       if (data.error) throw new Error(data.error);
@@ -87,61 +83,34 @@ export default function App() {
     {bg:"#2d0a0a",fg:"#ef4444",emoji:"❌"}
   ) : null;
 
-  const selectStyle = {
-    width:"100%",
-    background:"#1a1a1a",
-    border:"1px solid #333",
-    borderRadius:8,
-    color:"#f0f0f0",
-    padding:"10px 14px",
-    fontSize:14,
-    cursor:"pointer",
-    outline:"none",
-    appearance:"none",
-    WebkitAppearance:"none",
-    backgroundImage:`url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23888' d='M6 8L1 3h10z'/%3E%3C/svg%3E")`,
-    backgroundRepeat:"no-repeat",
-    backgroundPosition:"right 14px center",
-    paddingRight:36
-  };
-
   return (
     <div style={{fontFamily:"'Segoe UI',sans-serif",background:"#0a0a0a",color:"#f0f0f0",minHeight:"100vh",padding:20,maxWidth:680,margin:"0 auto"}}>
 
-      {/* Header */}
-      <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"16px 0 20px",borderBottom:"1px solid #1a1a1a",marginBottom:20}}>
-        <img src="/logo.png" alt="Epic Logo" style={{height:44,width:44,borderRadius:8,objectFit:"cover"}} />
-        <div style={{textAlign:"center",flex:1}}>
-          <div style={{fontSize:18,fontWeight:900,color:"#fff",letterSpacing:1}}>MARKETING AGENT</div>
-          <div style={{color:"#00aaff",fontSize:11,marginTop:3}}>Wes's approval filter — baked in AI</div>
-        </div>
-        <div style={{width:44}}></div>
+      <div style={{textAlign:"center",padding:"20px 0 14px"}}>
+        <div style={{fontSize:20,fontWeight:900,color:"#fff",letterSpacing:1}}>⚡ EPIC DEALS MARKETING AGENT</div>
+        <div style={{color:"#00aaff",fontSize:12,marginTop:5}}>Wes's approval filter — baked in AI</div>
       </div>
 
-      {/* Brand dropdown */}
-      <div style={{marginBottom:12}}>
-        <div style={{fontSize:11,color:"#555",textTransform:"uppercase",letterSpacing:1,marginBottom:6}}>Select Brand</div>
-        <div style={{position:"relative"}}>
-          <select value={brand} onChange={e => setBrand(e.target.value)} style={selectStyle}>
-            {BRANDS.map(b => <option key={b} value={b}>{b}</option>)}
-          </select>
-        </div>
+      <div style={{display:"flex",gap:7,flexWrap:"wrap",justifyContent:"center",margin:"12px 0"}}>
+        {BRANDS.map(b => (
+          <button key={b} onClick={() => setBrand(b)} style={{
+            padding:"5px 13px",borderRadius:20,border:"1px solid",cursor:"pointer",fontSize:12,fontWeight:brand===b?700:400,
+            background:brand===b?"#00aaff":"#1a1a1a",borderColor:brand===b?"#00aaff":"#333",color:brand===b?"#000":"#888"
+          }}>{b}</button>
+        ))}
       </div>
 
-      {/* Post type buttons — no emojis */}
-      <div style={{marginBottom:16}}>
-        <div style={{fontSize:11,color:"#555",textTransform:"uppercase",letterSpacing:1,marginBottom:6}}>Post Type</div>
-        <div style={{display:"flex",gap:7,flexWrap:"wrap"}}>
-          {TYPES.map(t => (
-            <button key={t} onClick={() => setType(t)} style={{
-              padding:"7px 16px",borderRadius:20,border:"1px solid",cursor:"pointer",fontSize:12,fontWeight:type===t?700:400,
-              background:type===t?"#7c3aed":"#1a1a1a",borderColor:type===t?"#7c3aed":"#333",color:type===t?"#fff":"#888"
-            }}>{t}</button>
-          ))}
-        </div>
+      <div style={{display:"flex",gap:7,flexWrap:"wrap",justifyContent:"center",marginBottom:14}}>
+        {TYPES.map(t => (
+          <button key={t} onClick={() => setType(t)} style={{
+            padding:"5px 13px",borderRadius:20,border:"1px solid",cursor:"pointer",fontSize:12,fontWeight:type===t?700:400,
+            background:type===t?"#7c3aed":"#1a1a1a",borderColor:type===t?"#7c3aed":"#333",color:type===t?"#fff":"#888"
+          }}>
+            {t==="Product Sale"?"📦 ":t==="Brand Visibility"?"👁 ":t==="Campaign"?"🎯 ":"🎁 "}{t}
+          </button>
+        ))}
       </div>
 
-      {/* Image upload */}
       <div
         onClick={() => fileRef.current.click()}
         style={{
@@ -159,35 +128,23 @@ export default function App() {
           </div>
         ) : (
           <div>
-            <div style={{fontSize:26,marginBottom:6}}>🖼️</div>
-            <div style={{fontSize:13,color:"#555"}}>Upload creative to review</div>
+            <div style={{fontSize:28,marginBottom:6}}>🖼️</div>
+            <div style={{fontSize:13,color:"#555"}}>Upload a creative to review</div>
             <div style={{fontSize:11,color:"#333",marginTop:3}}>JPG, PNG supported</div>
           </div>
         )}
         <input ref={fileRef} type="file" accept="image/*" onChange={handleImage} style={{display:"none"}} />
       </div>
 
-      {/* Caption input */}
-      <div style={{background:"#111",border:"1px solid #2a2a2a",borderRadius:12,padding:14,marginBottom:12}}>
-        <div style={{fontSize:11,color:"#555",textTransform:"uppercase",letterSpacing:1,marginBottom:8}}>Social Media Caption</div>
-        <textarea
-          value={caption}
-          onChange={e => setCaption(e.target.value)}
-          placeholder="Paste the caption here — copy, hashtags, CTA, everything..."
-          style={{width:"100%",background:"#0a0a0a",border:"1px solid #2a2a2a",borderRadius:8,color:"#f0f0f0",padding:12,fontSize:14,resize:"vertical",minHeight:80,fontFamily:"inherit",outline:"none"}}
-        />
-      </div>
-
-      {/* Description / context input */}
       <div style={{background:"#111",border:"1px solid #2a2a2a",borderRadius:12,padding:14,marginBottom:14}}>
         <div style={{fontSize:11,color:"#555",textTransform:"uppercase",letterSpacing:1,marginBottom:8}}>
-          {image ? "Additional Context (optional)" : "Describe the Post / Concept"}
+          {image ? "Add context (optional)" : "Describe the post or paste the copy/concept"}
         </div>
         <textarea
           value={input}
           onChange={e => setInput(e.target.value)}
           placeholder={image ? "e.g. Payday campaign targeting young professionals..." : "e.g. iPhone 15 Pro Max restocked, dark background, bold RESTOCKED text, no price, no CTA..."}
-          style={{width:"100%",background:"#0a0a0a",border:"1px solid #2a2a2a",borderRadius:8,color:"#f0f0f0",padding:12,fontSize:14,resize:"vertical",minHeight:image?60:80,fontFamily:"inherit",outline:"none"}}
+          style={{width:"100%",background:"#0a0a0a",border:"1px solid #2a2a2a",borderRadius:8,color:"#f0f0f0",padding:12,fontSize:14,resize:"vertical",minHeight:image?60:90,fontFamily:"inherit",outline:"none"}}
         />
       </div>
 
@@ -196,7 +153,7 @@ export default function App() {
         disabled={loading}
         style={{width:"100%",padding:13,background:"linear-gradient(135deg,#00aaff,#0066cc)",border:"none",borderRadius:10,color:"#fff",fontSize:15,fontWeight:700,cursor:loading?"not-allowed":"pointer",opacity:loading?0.5:1,letterSpacing:1}}
       >
-        {loading ? "REVIEWING..." : "REVIEW THIS POST"}
+        {loading ? "REVIEWING..." : "REVIEW THIS POST ⚡"}
       </button>
 
       {loading && <div style={{textAlign:"center",padding:28,color:"#555",fontSize:14}}>Running through Wes's filters...</div>}
@@ -217,19 +174,9 @@ export default function App() {
           <Section title="✅ What Works" items={result.what_works} icon="👍" />
           <Section title="❌ What Fails" items={result.what_fails} icon="⚠️" />
           <Section title="🔧 Fixes Needed" items={result.fixes} icon="→" />
-          {result.caption_feedback && (
-            <div style={{background:"#0d1f0d",border:"1px solid #1a3a1a",borderRadius:12,padding:14,marginBottom:10}}>
-              <div style={{fontSize:11,color:"#4ade80",textTransform:"uppercase",letterSpacing:1,marginBottom:8}}>Caption Review</div>
-              {result.caption_feedback.map((f,i) => (
-                <div key={i} style={{display:"flex",gap:8,padding:"7px 0",borderBottom:i<result.caption_feedback.length-1?"1px solid #1a2a1a":"none",fontSize:13,lineHeight:1.5}}>
-                  <span>✍️</span><span style={{color:"#ddd"}}>{f}</span>
-                </div>
-              ))}
-            </div>
-          )}
           {result.copy_suggestion && (
             <div style={{background:"#0a1628",border:"1px solid #1a3a5c",borderRadius:10,padding:14}}>
-              <div style={{fontSize:11,color:"#00aaff",textTransform:"uppercase",letterSpacing:1,marginBottom:7}}>Suggested Direction</div>
+              <div style={{fontSize:11,color:"#00aaff",textTransform:"uppercase",letterSpacing:1,marginBottom:7}}>💡 Suggested Direction</div>
               <div style={{fontSize:13,color:"#cce4ff",lineHeight:1.6,fontStyle:"italic"}}>"{result.copy_suggestion}"</div>
             </div>
           )}
