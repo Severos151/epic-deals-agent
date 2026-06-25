@@ -110,12 +110,12 @@ export default function App() {
 
       {/* Header */}
       <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"16px 0 20px",borderBottom:"1px solid #1a1a1a",marginBottom:20}}>
-        <img src="/logo.png" alt="Epic Logo" style={{height:44,width:44,borderRadius:8,objectFit:"cover"}} />
+        <img src="/logo.png" alt="Epic Logo" style={{height:88,width:88,borderRadius:8,objectFit:"cover"}} />
         <div style={{textAlign:"center",flex:1}}>
           <div style={{fontSize:18,fontWeight:900,color:"#fff",letterSpacing:1}}>MARKETING AGENT</div>
           <div style={{color:"#00aaff",fontSize:11,marginTop:3}}>Wes's approval filter — baked in AI</div>
         </div>
-        <div style={{width:44}}></div>
+        <div style={{width:88}}></div>
       </div>
 
       {/* Brand dropdown */}
