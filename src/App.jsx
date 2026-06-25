@@ -1,4 +1,68 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
+
+function LoginScreen({ onLogin }) {
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  async function handleLogin() {
+    if (!password.trim()) return;
+    setLoading(true); setError("");
+    try {
+      const res = await fetch("/api/auth", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password })
+      });
+      const data = await res.json();
+      if (data.success) {
+        sessionStorage.setItem("epicAuth", "true");
+        onLogin();
+      } else {
+        setError("Incorrect password. Try again.");
+      }
+    } catch(e) {
+      setError("Something went wrong. Try again.");
+    }
+    setLoading(false);
+  }
+
+  function handleKey(e) {
+    if (e.key === "Enter") handleLogin();
+  }
+
+  return (
+    <div style={{fontFamily:"'Segoe UI',sans-serif",background:"#0a0a0a",minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center",padding:20}}>
+      <div style={{width:"100%",maxWidth:360}}>
+        <div style={{textAlign:"center",marginBottom:32}}>
+          <img src="/logo.png" alt="Epic Logo" style={{height:88,width:88,borderRadius:12,objectFit:"cover",marginBottom:16}} />
+          <div style={{fontSize:20,fontWeight:900,color:"#fff",letterSpacing:1}}>MARKETING AGENT</div>
+          <div style={{color:"#00aaff",fontSize:12,marginTop:4}}>Epic Venture — Internal Tool</div>
+        </div>
+        <div style={{background:"#111",border:"1px solid #2a2a2a",borderRadius:12,padding:24}}>
+          <div style={{fontSize:11,color:"#555",textTransform:"uppercase",letterSpacing:1,marginBottom:8}}>Password</div>
+          <input
+            type="password"
+            value={password}
+            onChange={e => setPassword(e.target.value)}
+            onKeyDown={handleKey}
+            placeholder="Enter password"
+            style={{width:"100%",background:"#0a0a0a",border:`1px solid ${error?"#ef4444":"#2a2a2a"}`,borderRadius:8,color:"#f0f0f0",padding:12,fontSize:14,fontFamily:"inherit",outline:"none",marginBottom:12,boxSizing:"border-box"}}
+            autoFocus
+          />
+          {error && <div style={{color:"#ef4444",fontSize:12,marginBottom:12}}>{error}</div>}
+          <button
+            onClick={handleLogin}
+            disabled={loading}
+            style={{width:"100%",padding:13,background:"linear-gradient(135deg,#00aaff,#0066cc)",border:"none",borderRadius:10,color:"#fff",fontSize:15,fontWeight:700,cursor:loading?"not-allowed":"pointer",opacity:loading?0.5:1,letterSpacing:1}}
+          >
+            {loading ? "CHECKING..." : "LOGIN"}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 const BRANDS = ["Epic Deals","Orange Advertising","GS Gear","Epic Rentals","Kirks Plumbing","Epic Marketing"];
 const TYPES = ["Product Sale","Brand Visibility","Campaign","Promotional"];
@@ -121,13 +185,13 @@ function saveToHistory(entry) {
 }
 
 export default function App() {
+  const [authed, setAuthed] = useState(() => sessionStorage.getItem("epicAuth") === "true");
   const [tab, setTab] = useState("review");
   const [brand, setBrand] = useState("Epic Deals");
   const [type, setType] = useState("Product Sale");
   const [platform, setPlatform] = useState("Instagram");
   const [language, setLanguage] = useState("english");
   const [saFlavour, setSaFlavour] = useState(false);
-
   const [input, setInput] = useState("");
   const [caption, setCaption] = useState("");
   const [image, setImage] = useState(null);
@@ -138,15 +202,15 @@ export default function App() {
   const [error, setError] = useState("");
   const [rewriting, setRewriting] = useState(false);
   const [rewrittenCaption, setRewrittenCaption] = useState("");
-
   const [briefProduct, setBriefProduct] = useState("");
   const [briefGoal, setBriefGoal] = useState("Drive Sales");
   const [briefNotes, setBriefNotes] = useState("");
   const [briefLoading, setBriefLoading] = useState(false);
   const [brief, setBrief] = useState(null);
-
   const [history, setHistory] = useState(getHistory());
   const fileRef = useRef();
+
+  if (!authed) return <LoginScreen onLogin={() => setAuthed(true)} />;
 
   function handleImage(e) {
     const file = e.target.files[0];
