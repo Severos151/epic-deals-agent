@@ -97,6 +97,7 @@ export default function App() {
   const [type, setType] = useState("Product Sale");
   const [language, setLanguage] = useState("english");
   const [saFlavour, setSaFlavour] = useState(false);
+  const [platform, setPlatform] = useState("Instagram");
 
   // Review state
   const [input, setInput] = useState("");
@@ -147,7 +148,7 @@ export default function App() {
     try {
       const res = await fetch("/api/review", {
         method:"POST", headers:{"Content-Type":"application/json"},
-        body: JSON.stringify({ brand, type, input, caption, imageBase64, imageType })
+        body: JSON.stringify({ brand, type, input, caption, imageBase64, imageType, platform })
       });
       const data = await res.json();
       if (data.error) throw new Error(data.error);
@@ -167,7 +168,7 @@ export default function App() {
     try {
       const res = await fetch("/api/rewrite", {
         method:"POST", headers:{"Content-Type":"application/json"},
-        body: JSON.stringify({ brand, type, caption, fixes: result?.fixes, suggestion: result?.copy_suggestion, saFlavour, language })
+        body: JSON.stringify({ brand, type, caption, fixes: result?.fixes, suggestion: result?.copy_suggestion, saFlavour, language, platform })
       });
       const data = await res.json();
       setRewrittenCaption(data.rewritten || "");
@@ -181,7 +182,7 @@ export default function App() {
     try {
       const res = await fetch("/api/brief", {
         method:"POST", headers:{"Content-Type":"application/json"},
-        body: JSON.stringify({ brand, type, product: briefProduct, goal: briefGoal, notes: briefNotes, saFlavour, language })
+        body: JSON.stringify({ brand, type, product: briefProduct, goal: briefGoal, notes: briefNotes, saFlavour, language, platform })
       });
       const data = await res.json();
       setBrief(data);
@@ -213,6 +214,17 @@ export default function App() {
               padding:"7px 16px",borderRadius:20,border:"1px solid",cursor:"pointer",fontSize:12,fontWeight:type===t?700:400,
               background:type===t?"#7c3aed":"#1a1a1a",borderColor:type===t?"#7c3aed":"#333",color:type===t?"#fff":"#888"
             }}>{t}</button>
+          ))}
+        </div>
+      </div>
+      <div style={{marginBottom:14}}>
+        <div style={{fontSize:11,color:"#555",textTransform:"uppercase",letterSpacing:1,marginBottom:6}}>Platform</div>
+        <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
+          {["Instagram","Facebook","TikTok","WhatsApp Status","All Platforms"].map(p=>(
+            <button key={p} onClick={()=>setPlatform(p)} style={{
+              padding:"7px 14px",borderRadius:20,border:"1px solid",cursor:"pointer",fontSize:12,fontWeight:platform===p?700:400,
+              background:platform===p?"#e11d48":"#1a1a1a",borderColor:platform===p?"#e11d48":"#333",color:platform===p?"#fff":"#888"
+            }}>{p==="Instagram"?"📸 ":p==="Facebook"?"👥 ":p==="TikTok"?"🎵 ":p==="WhatsApp Status"?"💬 ":"🌐 "}{p}</button>
           ))}
         </div>
       </div>
@@ -303,6 +315,7 @@ export default function App() {
               <Section title="✅ What Works" items={result.what_works} icon="👍" />
               <Section title="❌ What Fails" items={result.what_fails} icon="⚠️" />
               <Section title="🔧 Fixes Needed" items={result.fixes} icon="→" />
+              {result.platform_notes?.length > 0 && <Section title={`📱 ${platform} Notes`} items={result.platform_notes} icon="→" color="#e11d48" />}
               {result.caption_feedback?.length > 0 && <Section title="✍️ Caption Review" items={result.caption_feedback} icon="→" color="#4ade80" />}
               {result.copy_suggestion && (
                 <div style={{background:"#0a1628",border:"1px solid #1a3a5c",borderRadius:10,padding:14,marginBottom:12}}>
