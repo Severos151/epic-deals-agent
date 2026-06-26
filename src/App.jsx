@@ -367,13 +367,17 @@ export default function App() {
             <input ref={fileRef} type="file" accept="image/*" onChange={handleImage} style={{display:"none"}} />
           </div>
 
-          <div ref={trainingRefs.caption}>{inputBox("Social Media Caption",
-            <textarea value={caption} onChange={e => setCaption(e.target.value)} placeholder="Paste the caption here — copy, hashtags, CTA, everything..." style={textareaStyle(80)} />
-          )}
+          <div ref={trainingRefs.caption}>
+            {inputBox("Social Media Caption",
+              <textarea value={caption} onChange={e => setCaption(e.target.value)} placeholder="Paste the caption here — copy, hashtags, CTA, everything..." style={textareaStyle(80)} />
+            )}
+          </div>
 
-          <div ref={trainingRefs.describe}>{inputBox(image ? "Additional Context (optional)" : "Describe the Post / Concept",
-            <textarea value={input} onChange={e => setInput(e.target.value)} placeholder={image ? "e.g. Payday campaign targeting young professionals..." : "e.g. iPhone 15 Pro Max restocked, dark background, bold RESTOCKED text, no price, no CTA..."} style={textareaStyle(image?60:80)} />
-          )}</div>
+          <div ref={trainingRefs.describe}>
+            {inputBox(image ? "Additional Context (optional)" : "Describe the Post / Concept",
+              <textarea value={input} onChange={e => setInput(e.target.value)} placeholder={image ? "e.g. Payday campaign targeting young professionals..." : "e.g. iPhone 15 Pro Max restocked, dark background, bold RESTOCKED text, no price, no CTA..."} style={textareaStyle(image?60:80)} />
+            )}
+          </div>
 
           <button ref={trainingRefs.reviewbtn} onClick={reviewPost} disabled={loading} style={{width:"100%",padding:13,background:"linear-gradient(135deg,#00aaff,#0066cc)",border:"none",borderRadius:10,color:"#fff",fontSize:15,fontWeight:700,cursor:loading?"not-allowed":"pointer",opacity:loading?0.5:1,letterSpacing:1,marginBottom:4}}>
             {loading ? "REVIEWING..." : "REVIEW THIS POST"}
