@@ -23,7 +23,7 @@ export default async function handler(req, res) {
 
   const BRAND_VOICE = {
     "Epic Deals": "Smart, confident, value-driven. SA tone. Pre-loved tech — quality at a smarter price.",
-    "Orange Advertising": "Adventurous, technical, passionate. KTM adventure bike community.",
+    "Orange ADV": "Adventurous, technical, passionate. KTM adventure bike community.",
     "GS Gear": "Premium, technical, adventurous. BMW GS adventure bike community.",
     "Epic Rentals": "Empathetic, practical, empowering. Quality products, no big upfront cost.",
     "Kirks Plumbing": "Trustworthy, professional, no-nonsense. Residential and commercial construction.",

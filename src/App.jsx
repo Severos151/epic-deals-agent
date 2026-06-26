@@ -65,7 +65,7 @@ function LoginScreen({ onLogin }) {
   );
 }
 
-const BRANDS = ["Epic Deals","Orange Advertising","GS Gear","Epic Rentals","Kirks Plumbing","Epic Marketing"];
+const BRANDS = ["Epic Deals","Orange ADV","GS Gear","Epic Rentals","Kirks Plumbing","Epic Marketing"];
 const TYPES = ["Product Sale","Brand Visibility","Campaign","Promotional"];
 const PLATFORMS = ["Instagram","Facebook","TikTok","WhatsApp Status","All Platforms"];
 const GOALS = ["Drive Sales","Build Brand Awareness","Announce Restock","Promote Deal/Discount","Build Trust","Engagement / Reach"];
