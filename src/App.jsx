@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { TrainingOverlay, TrainingToggle } from "./Training";
 
 function LoginScreen({ onLogin }) {
   const [password, setPassword] = useState("");
@@ -209,6 +210,24 @@ export default function App() {
   const [brief, setBrief] = useState(null);
   const [history, setHistory] = useState(getHistory());
   const fileRef = useRef();
+  const [training, setTraining] = useState(false);
+
+  // Training refs
+  const trainingRefs = {
+    tabs: useRef(null),
+    brand: useRef(null),
+    posttype: useRef(null),
+    platform: useRef(null),
+    upload: useRef(null),
+    caption: useRef(null),
+    describe: useRef(null),
+    reviewbtn: useRef(null),
+    scores: useRef(null),
+    verdict: useRef(null),
+    rewrite: useRef(null),
+    saflavour: useRef(null),
+    language: useRef(null),
+  };
 
   if (!authed) return <LoginScreen onLogin={() => setAuthed(true)} />;
 
@@ -288,18 +307,22 @@ export default function App() {
   return (
     <div style={{fontFamily:"'Segoe UI',sans-serif",background:"#0a0a0a",color:"#f0f0f0",minHeight:"100vh",padding:20,maxWidth:680,margin:"0 auto"}}>
 
+      <TrainingOverlay active={training} onClose={() => setTraining(false)} refs={trainingRefs} />
+
       {/* Header */}
-      <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"16px 0 20px",borderBottom:"1px solid #1a1a1a",marginBottom:20}}>
+      <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"16px 0 16px",borderBottom:"1px solid #1a1a1a",marginBottom:16}}>
         <img src="/logo.png" alt="Epic Logo" style={{height:88,width:88,borderRadius:8,objectFit:"cover"}} />
         <div style={{textAlign:"center",flex:1}}>
           <div style={{fontSize:18,fontWeight:900,color:"#fff",letterSpacing:1}}>MARKETING AGENT</div>
           <div style={{color:"#00aaff",fontSize:11,marginTop:3}}>Wes's approval filter — baked in AI</div>
         </div>
-        <div style={{width:88}} />
+        <div style={{width:88,display:"flex",justifyContent:"flex-end"}}>
+          <TrainingToggle active={training} onChange={setTraining} />
+        </div>
       </div>
 
       {/* Tabs */}
-      <div style={{display:"flex",gap:6,marginBottom:20}}>
+      <div ref={trainingRefs.tabs} style={{display:"flex",gap:6,marginBottom:20}}>
         <TabButton label="Review Post" active={tab==="review"} onClick={() => setTab("review")} />
         <TabButton label="Generate Brief" active={tab==="brief"} onClick={() => setTab("brief")} />
         <TabButton label="Score History" active={tab==="history"} onClick={() => setTab("history")} />
@@ -308,28 +331,28 @@ export default function App() {
       {/* REVIEW TAB */}
       {tab==="review" && (
         <>
-          <div style={{marginBottom:12}}>
+          <div ref={trainingRefs.brand} style={{marginBottom:12}}>
             <div style={{fontSize:11,color:"#555",textTransform:"uppercase",letterSpacing:1,marginBottom:6}}>Select Brand</div>
             <select value={brand} onChange={e => setBrand(e.target.value)} style={selectStyle}>
               {BRANDS.map(b => <option key={b} value={b}>{b}</option>)}
             </select>
           </div>
 
-          <div style={{marginBottom:14}}>
+          <div ref={trainingRefs.posttype} style={{marginBottom:14}}>
             <div style={{fontSize:11,color:"#555",textTransform:"uppercase",letterSpacing:1,marginBottom:6}}>Post Type</div>
             <div style={{display:"flex",gap:7,flexWrap:"wrap"}}>
               {TYPES.map(t => <PillButton key={t} label={t} active={type===t} onClick={() => setType(t)} activeColor="#7c3aed" />)}
             </div>
           </div>
 
-          <div style={{marginBottom:16}}>
+          <div ref={trainingRefs.platform} style={{marginBottom:16}}>
             <div style={{fontSize:11,color:"#555",textTransform:"uppercase",letterSpacing:1,marginBottom:6}}>Platform</div>
             <div style={{display:"flex",gap:7,flexWrap:"wrap"}}>
               {PLATFORMS.map(p => <PillButton key={p} label={p} active={platform===p} onClick={() => setPlatform(p)} activeColor="#e11d48" />)}
             </div>
           </div>
 
-          <div onClick={() => fileRef.current.click()} style={{background:"#111",border:`2px dashed ${image?"#00aaff":"#2a2a2a"}`,borderRadius:12,padding:image?8:20,marginBottom:12,textAlign:"center",cursor:"pointer"}}>
+          <div ref={trainingRefs.upload} onClick={() => fileRef.current.click()} style={{background:"#111",border:`2px dashed ${image?"#00aaff":"#2a2a2a"}`,borderRadius:12,padding:image?8:20,marginBottom:12,textAlign:"center",cursor:"pointer"}}>
             {image ? (
               <div style={{position:"relative",display:"inline-block"}}>
                 <img src={image} alt="preview" style={{maxHeight:200,maxWidth:"100%",borderRadius:8,display:"block"}} />
@@ -344,15 +367,15 @@ export default function App() {
             <input ref={fileRef} type="file" accept="image/*" onChange={handleImage} style={{display:"none"}} />
           </div>
 
-          {inputBox("Social Media Caption",
+          <div ref={trainingRefs.caption}>{inputBox("Social Media Caption",
             <textarea value={caption} onChange={e => setCaption(e.target.value)} placeholder="Paste the caption here — copy, hashtags, CTA, everything..." style={textareaStyle(80)} />
           )}
 
-          {inputBox(image ? "Additional Context (optional)" : "Describe the Post / Concept",
+          <div ref={trainingRefs.describe}>{inputBox(image ? "Additional Context (optional)" : "Describe the Post / Concept",
             <textarea value={input} onChange={e => setInput(e.target.value)} placeholder={image ? "e.g. Payday campaign targeting young professionals..." : "e.g. iPhone 15 Pro Max restocked, dark background, bold RESTOCKED text, no price, no CTA..."} style={textareaStyle(image?60:80)} />
-          )}
+          )}</div>
 
-          <button onClick={reviewPost} disabled={loading} style={{width:"100%",padding:13,background:"linear-gradient(135deg,#00aaff,#0066cc)",border:"none",borderRadius:10,color:"#fff",fontSize:15,fontWeight:700,cursor:loading?"not-allowed":"pointer",opacity:loading?0.5:1,letterSpacing:1,marginBottom:4}}>
+          <button ref={trainingRefs.reviewbtn} onClick={reviewPost} disabled={loading} style={{width:"100%",padding:13,background:"linear-gradient(135deg,#00aaff,#0066cc)",border:"none",borderRadius:10,color:"#fff",fontSize:15,fontWeight:700,cursor:loading?"not-allowed":"pointer",opacity:loading?0.5:1,letterSpacing:1,marginBottom:4}}>
             {loading ? "REVIEWING..." : "REVIEW THIS POST"}
           </button>
 
@@ -361,7 +384,7 @@ export default function App() {
 
           {result && (
             <div style={{marginTop:18}}>
-              <div style={{display:"flex",gap:8,marginBottom:14,flexWrap:"wrap"}}>
+              <div ref={trainingRefs.scores} style={{display:"flex",gap:8,marginBottom:14,flexWrap:"wrap"}}>
                 <ScoreCard label="Quality" value={result.scores.quality} />
                 <ScoreCard label="Trust" value={result.scores.trust} />
                 <ScoreCard label="Scroll" value={result.scores.scroll} />
@@ -369,7 +392,7 @@ export default function App() {
                 <ScoreCard label="Overall" value={avg} />
               </div>
 
-              <div style={{background:verdictBg,border:`1px solid ${verdictColor}`,color:verdictColor,borderRadius:10,padding:13,textAlign:"center",fontWeight:700,fontSize:15,marginBottom:14,letterSpacing:2}}>
+              <div ref={trainingRefs.verdict} style={{background:verdictBg,border:`1px solid ${verdictColor}`,color:verdictColor,borderRadius:10,padding:13,textAlign:"center",fontWeight:700,fontSize:15,marginBottom:14,letterSpacing:2}}>
                 {result.verdict}
               </div>
 
@@ -388,7 +411,7 @@ export default function App() {
 
               {caption.trim() && result.verdict !== "APPROVED" && (
                 <div style={{marginTop:8}}>
-                  <button onClick={rewriteCaption} disabled={rewriting} style={{width:"100%",padding:12,background:"linear-gradient(135deg,#7c3aed,#5b21b6)",border:"none",borderRadius:10,color:"#fff",fontSize:14,fontWeight:700,cursor:rewriting?"not-allowed":"pointer",opacity:rewriting?0.5:1}}>
+                  <button ref={trainingRefs.rewrite} onClick={rewriteCaption} disabled={rewriting} style={{width:"100%",padding:12,background:"linear-gradient(135deg,#7c3aed,#5b21b6)",border:"none",borderRadius:10,color:"#fff",fontSize:14,fontWeight:700,cursor:rewriting?"not-allowed":"pointer",opacity:rewriting?0.5:1}}>
                     {rewriting ? "REWRITING..." : "REWRITE CAPTION"}
                   </button>
                   {rewrittenCaption && (
@@ -415,7 +438,7 @@ export default function App() {
             </select>
           </div>
 
-          <div style={{marginBottom:14}}>
+          <div ref={trainingRefs.posttype} style={{marginBottom:14}}>
             <div style={{fontSize:11,color:"#555",textTransform:"uppercase",letterSpacing:1,marginBottom:6}}>Post Type</div>
             <div style={{display:"flex",gap:7,flexWrap:"wrap"}}>
               {TYPES.map(t => <PillButton key={t} label={t} active={type===t} onClick={() => setType(t)} activeColor="#7c3aed" />)}
@@ -429,12 +452,12 @@ export default function App() {
             </div>
           </div>
 
-          <div style={{marginBottom:6}}>
+          <div ref={trainingRefs.language} style={{marginBottom:6}}>
             <div style={{fontSize:11,color:"#555",textTransform:"uppercase",letterSpacing:1,marginBottom:6}}>Language</div>
             <LangToggle value={language} onChange={setLanguage} />
           </div>
 
-          <Toggle label="SA Flavour" sublabel="Add local humour, vernacular and cultural references" value={saFlavour} onChange={setSaFlavour} />
+          <div ref={trainingRefs.saflavour}><Toggle label="SA Flavour" sublabel="Add local humour, vernacular and cultural references" value={saFlavour} onChange={setSaFlavour} /></div>
 
           {inputBox("Product / Topic",
             <input value={briefProduct} onChange={e => setBriefProduct(e.target.value)} placeholder="e.g. iPhone 15 Pro Max, MacBook M2, Samsung Galaxy S24..." style={inputStyle} />
